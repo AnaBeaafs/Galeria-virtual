@@ -16,7 +16,6 @@
 
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
-</script>
 
 const COL_GALERIAS = "galerias";
 const COL_CLIENTES = "clientes";
