@@ -4,14 +4,19 @@
    SEU projeto (Console → ⚙️ → Seus apps)
    ============================================ */
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAKLnQM3JDXHO2YtqXc5WLcCU9yjrrXcmc",
-  authDomain: "galeria-virtual-v2.firebaseapp.com",
-  projectId: "galeria-virtual-v2",
-  storageBucket: "galeria-virtual-v2.firebasestorage.app",
-  messagingSenderId: "1095049105344",
-  appId: "1:1095049105344:web:d1f710c50b8ebccb030225"
-}
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyAKLnQM3JDXHO2YtqXc5WLcCU9yjrrXcmc",
+    authDomain: "galeria-virtual-v2.firebaseapp.com",
+    projectId: "galeria-virtual-v2",
+    storageBucket: "galeria-virtual-v2.firebasestorage.app",
+    messagingSenderId: "1095049105344",
+    appId: "1:1095049105344:web:d1f710c50b8ebccb030225"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+</script>
 
 const COL_GALERIAS = "galerias";
 const COL_CLIENTES = "clientes";
