@@ -14,9 +14,6 @@
     appId: "1:1095049105344:web:d1f710c50b8ebccb030225"
   };
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-
 const COL_GALERIAS = "galerias";
 const COL_CLIENTES = "clientes";
 
@@ -36,4 +33,7 @@ if (typeof firebase === "undefined") {
   } catch (e) {
     console.error("[Galeria] Erro ao iniciar Firebase:", e);
   }
+     // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+
 }
