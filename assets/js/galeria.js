@@ -1,4 +1,4 @@
-/* Galeria Virtual — Cliente (Firestore + URLs do Storage) */
+/* Galeria Virtual — Cliente (Firestore + URL) */
 (function () {
   "use strict";
 
@@ -12,6 +12,7 @@
   var galeria = null;
   var fotosFiltradas = [];
   var indiceLB = 0;
+  var filtroAtual = ""; // "" | "favoritas" | categoriaId
   var favoritos = [];
   try {
     favoritos = JSON.parse(localStorage.getItem("gv_favs") || "[]");
@@ -43,10 +44,26 @@
     return d.innerHTML;
   }
 
+  function favKey() {
+    return "gv_favs_" + (galeria && galeria.slug ? galeria.slug : "global");
+  }
+
+  function carregarFavs() {
+    try {
+      favoritos = JSON.parse(localStorage.getItem(favKey()) || "[]");
+    } catch (e) {
+      favoritos = [];
+    }
+  }
+
+  function salvarFavs() {
+    localStorage.setItem(favKey(), JSON.stringify(favoritos));
+  }
+
   function mostrarErro() {
     var main = $("main") || document.body;
     main.innerHTML =
-      '<div style="min-height:80vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;text-align:center">' +
+      '<div style="min-height:70vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;text-align:center">' +
       '<h1 style="font-family:Montserrat,sans-serif;font-size:24px;font-weight:800;color:#032e5e">Galeria não encontrada</h1>' +
       '<p style="color:#5a6a7a;font-size:14px">Link incorreto ou galeria removida.</p></div>';
   }
@@ -85,9 +102,10 @@
     if (!slug) return mostrarErro();
     galeria = await carregarGaleria(slug);
     if (!galeria) return mostrarErro();
+    carregarFavs();
     renderHero();
     renderCategorias();
-    filtrarFotos(null);
+    filtrarFotos("");
     bindEventos();
     requestAnimationFrame(function () {
       var h = $(".hero");
@@ -115,26 +133,24 @@
       if (galeria.mensagem) $(".hero-mensagem").textContent = galeria.mensagem;
       else $(".hero-mensagem").style.display = "none";
     }
-    document.title = galeria.nome + " — Galeria";
+    document.title = galeria.nome + " — Bia Sousa";
   }
 
   function renderCategorias() {
     var wrap = $(".categorias");
     if (!wrap) return;
-    if (!galeria.tem_categorias || !(galeria.categorias && galeria.categorias.length)) {
-      wrap.style.display = "none";
-      return;
-    }
-    wrap.style.display = "";
-    var cats = galeria.categorias.slice().sort(function (a, b) {
-      return (a.ordem || 0) - (b.ordem || 0);
-    });
-    wrap.innerHTML =
-      '<button class="cat-btn ativo" data-cat="">Todas</button>' +
-      cats
+
+    var html =
+      '<button type="button" class="cat-btn ativo" data-cat="">Todas</button>';
+
+    if (galeria.tem_categorias && galeria.categorias && galeria.categorias.length) {
+      var cats = galeria.categorias.slice().sort(function (a, b) {
+        return (a.ordem || 0) - (b.ordem || 0);
+      });
+      html += cats
         .map(function (c) {
           return (
-            '<button class="cat-btn" data-cat="' +
+            '<button type="button" class="cat-btn" data-cat="' +
             esc(c.id) +
             '">' +
             esc(c.nome) +
@@ -142,6 +158,14 @@
           );
         })
         .join("");
+    }
+
+    html +=
+      '<button type="button" class="cat-btn fav-tab" data-cat="favoritas">♥ Favoritas</button>';
+
+    wrap.style.display = "";
+    wrap.innerHTML = html;
+
     wrap.onclick = function (e) {
       var btn = e.target.closest(".cat-btn");
       if (!btn) return;
@@ -149,16 +173,24 @@
         b.classList.remove("ativo");
       });
       btn.classList.add("ativo");
-      filtrarFotos(btn.dataset.cat || null);
+      filtrarFotos(btn.dataset.cat || "");
     };
   }
 
-  function filtrarFotos(catId) {
-    if (!catId) fotosFiltradas = (galeria.fotos || []).slice();
-    else
-      fotosFiltradas = (galeria.fotos || []).filter(function (f) {
-        return f.categoria === catId;
+  function filtrarFotos(filtro) {
+    filtroAtual = filtro || "";
+    var todas = galeria.fotos || [];
+    if (filtroAtual === "favoritas") {
+      fotosFiltradas = todas.filter(function (f) {
+        return favoritos.indexOf(f.id) >= 0;
       });
+    } else if (filtroAtual) {
+      fotosFiltradas = todas.filter(function (f) {
+        return f.categoria === filtroAtual;
+      });
+    } else {
+      fotosFiltradas = todas.slice();
+    }
     renderGrid();
   }
 
@@ -170,6 +202,15 @@
       var n = fotosFiltradas.length;
       contador.textContent = n + " fotografia" + (n !== 1 ? "s" : "");
     }
+    if (!fotosFiltradas.length) {
+      grid.innerHTML =
+        '<p style="grid-column:1/-1;padding:40px;text-align:center;color:#5a6a7a;font-weight:500">' +
+        (filtroAtual === "favoritas"
+          ? "Nenhuma foto favoritada ainda. Toque no coração nas fotos."
+          : "Nenhuma fotografia nesta seleção.") +
+        "</p>";
+      return;
+    }
     grid.innerHTML = fotosFiltradas
       .map(function (f, i) {
         var fav = favoritos.indexOf(f.id) >= 0;
@@ -179,7 +220,7 @@
           '"><img src="' +
           f.url +
           '" alt="" loading="lazy" />' +
-          '<button class="foto-fav ' +
+          '<button type="button" class="foto-fav ' +
           (fav ? "ativo" : "") +
           '" data-id="' +
           f.id +
@@ -200,23 +241,31 @@
       var favBtn = e.target.closest(".foto-fav");
       if (favBtn) {
         e.stopPropagation();
-        var id = favBtn.dataset.id;
-        var idx = favoritos.indexOf(id);
-        if (idx >= 0) {
-          favoritos.splice(idx, 1);
-          favBtn.classList.remove("ativo");
-          favBtn.textContent = "♡";
-        } else {
-          favoritos.push(id);
-          favBtn.classList.add("ativo");
-          favBtn.textContent = "♥";
-        }
-        localStorage.setItem("gv_favs", JSON.stringify(favoritos));
+        toggleFav(favBtn.dataset.id, favBtn);
         return;
       }
       var foto = e.target.closest(".foto");
       if (foto) abrirLightbox(+foto.dataset.index);
     };
+  }
+
+  function toggleFav(id, btn) {
+    var idx = favoritos.indexOf(id);
+    if (idx >= 0) {
+      favoritos.splice(idx, 1);
+      if (btn) {
+        btn.classList.remove("ativo");
+        btn.textContent = "♡";
+      }
+    } else {
+      favoritos.push(id);
+      if (btn) {
+        btn.classList.add("ativo");
+        btn.textContent = "♥";
+      }
+    }
+    salvarFavs();
+    if (filtroAtual === "favoritas") filtrarFotos("favoritas");
   }
 
   function abrirLightbox(index) {
@@ -251,26 +300,113 @@
   }
 
   function navegarLB(dir) {
+    if (!fotosFiltradas.length) return;
     indiceLB += dir;
     if (indiceLB < 0) indiceLB = fotosFiltradas.length - 1;
     if (indiceLB >= fotosFiltradas.length) indiceLB = 0;
     atualizarLB();
   }
 
-  /** Download da URL original do Storage (arquivo completo) */
-  function downloadFoto() {
+  /** Força download imediato (blob) quando possível */
+  async function downloadFoto() {
     var f = fotosFiltradas[indiceLB];
     if (!f || galeria.download === false) return;
     var href = f.original || f.url;
     if (!href) return;
-    var a = document.createElement("a");
-    a.href = href;
-    a.download = f.name || "foto-" + f.id + ".jpg";
-    a.target = "_blank";
-    a.rel = "noopener";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
+    var nome = f.name || "foto-" + (f.id || indiceLB + 1) + ".jpg";
+
+    try {
+      var res = await fetch(href, { mode: "cors" });
+      if (!res.ok) throw new Error("fetch fail");
+      var blob = await res.blob();
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url;
+      a.download = nome;
+      a.style.display = "none";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(function () {
+        URL.revokeObjectURL(url);
+      }, 2500);
+      return;
+    } catch (e) {
+      // CORS: abre em nova aba / download nativo
+      var a2 = document.createElement("a");
+      a2.href = href;
+      a2.download = nome;
+      a2.target = "_blank";
+      a2.rel = "noopener";
+      document.body.appendChild(a2);
+      a2.click();
+      a2.remove();
+    }
+  }
+
+  async function compartilharFoto() {
+    var f = fotosFiltradas[indiceLB];
+    if (!f) return;
+    var pageUrl = window.location.href;
+    var titulo = (galeria && galeria.nome) || "Galeria";
+    var texto = titulo + " — foto";
+
+    try {
+      if (navigator.share) {
+        // Tenta compartilhar arquivo se CORS permitir
+        try {
+          var res = await fetch(f.url, { mode: "cors" });
+          if (res.ok) {
+            var blob = await res.blob();
+            var file = new File(
+              [blob],
+              f.name || "foto.jpg",
+              { type: blob.type || "image/jpeg" }
+            );
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+              await navigator.share({
+                files: [file],
+                title: titulo,
+                text: texto,
+              });
+              return;
+            }
+          }
+        } catch (errShareFile) {}
+        await navigator.share({ title: titulo, text: texto, url: pageUrl });
+        return;
+      }
+    } catch (errShare) {
+      if (errShare && errShare.name === "AbortError") return;
+    }
+
+    // Fallback: copiar link da página da galeria
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(pageUrl);
+        alert("Link da galeria copiado!");
+        return;
+      }
+    } catch (e) {}
+    prompt("Copie o link da galeria:", pageUrl);
+  }
+
+  function compartilharGaleria() {
+    var pageUrl = window.location.href;
+    var titulo = (galeria && galeria.nome) || "Galeria";
+    if (navigator.share) {
+      navigator
+        .share({ title: titulo, url: pageUrl })
+        .catch(function () {});
+      return;
+    }
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(pageUrl).then(function () {
+        alert("Link copiado!");
+      });
+    } else {
+      prompt("Copie o link:", pageUrl);
+    }
   }
 
   function bindEventos() {
@@ -289,7 +425,17 @@
         navegarLB(1);
       });
     $(".lb-download") &&
-      $(".lb-download").addEventListener("click", downloadFoto);
+      $(".lb-download").addEventListener("click", function () {
+        downloadFoto();
+      });
+    $(".lb-share") &&
+      $(".lb-share").addEventListener("click", function () {
+        compartilharFoto();
+      });
+    $(".btn-share") &&
+      $(".btn-share").addEventListener("click", function () {
+        compartilharGaleria();
+      });
     document.addEventListener("keydown", function (e) {
       if (!$(".lightbox.aberto")) return;
       if (e.key === "Escape") fecharLightbox();
