@@ -33,7 +33,4 @@ if (typeof firebase === "undefined") {
   } catch (e) {
     console.error("[Galeria] Erro ao iniciar Firebase:", e);
   }
-     // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-
 }
