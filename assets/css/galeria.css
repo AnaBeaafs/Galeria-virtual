@@ -837,3 +837,39 @@ select.form-input {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* ---------- Rodapé ---------- */
+.site-footer {
+  background: #032e5e;
+  color: rgba(255, 255, 255, 0.9);
+  text-align: center;
+  padding: 22px 20px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  line-height: 1.5;
+  margin-top: auto;
+}
+
+.site-footer strong {
+  font-weight: 700;
+  color: #fff;
+}
+
+body.page-with-footer {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+body.page-with-footer > main,
+body.page-with-footer > .home,
+body.page-with-footer > .admin-layout {
+  flex: 1;
+}
+
+.cat-btn.fav-tab.ativo {
+  background: #e11d48;
+  border-color: #e11d48;
+  color: #fff;
+}
