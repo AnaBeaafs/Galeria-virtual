@@ -25,12 +25,14 @@ if (typeof firebase === "undefined") {
 } else {
   try {
     if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
+        firebase.initializeApp(firebaseConfig);
     }
-    auth = firebase.auth();
-    db = firebase.firestore();
-    console.log("[Galeria] Firebase OK (sem Storage) —", firebaseConfig.projectId);
-  } catch (e) {
-    console.error("[Galeria] Erro ao iniciar Firebase:", e);
-  }
+
+    auth = firebase.auth ? firebase.auth() : null;
+    db = firebase.firestore ? firebase.firestore() : null;
+
+    console.log("Firebase OK");
+} catch(e){
+    console.error(e);
+}
 }
