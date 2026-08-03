@@ -7,15 +7,15 @@
   <title>Galeria | Bia Sousa</title>
   <link rel="stylesheet" href="../assets/css/galeria.css" />
 </head>
-<body>
+<body class="page-with-footer">
   <header class="topbar">
-    <div class="topbar-marca"><span></span> Galeria | Bia Sousa</div>
+    <div class="topbar-marca"><span></span> Bia Sousa</div>
     <div class="topbar-acoes">
-      <button class="btn-icon btn-share" title="Compartilhar" aria-label="Compartilhar">
+      <button type="button" class="btn-icon btn-share" title="Compartilhar galeria" aria-label="Compartilhar">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/>
-          <polyline points="16 6 12 2 8 6"/>
-          <line x1="12" y1="2" x2="12" y2="15"/>
+          <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
         </svg>
       </button>
     </div>
@@ -43,23 +43,27 @@
     <div class="grid"></div>
   </main>
 
-  <div class="lightbox" role="dialog" aria-modal="true" aria-label="Visualização da fotografia">
+  <footer class="site-footer">
+    <strong>Bia Sousa</strong> | Web &amp; Social media Designer — Todos os direitos reservados 2026
+  </footer>
+
+  <div class="lightbox" role="dialog" aria-modal="true" aria-label="Fotografia">
     <div class="lb-header">
-      <button class="lb-btn lb-fechar" aria-label="Fechar">
+      <button type="button" class="lb-btn lb-fechar" aria-label="Fechar">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
         </svg>
       </button>
       <span class="lb-contador"></span>
       <div class="lb-acoes">
-        <button class="lb-btn lb-share" aria-label="Compartilhar">
+        <button type="button" class="lb-btn lb-share" aria-label="Compartilhar foto" title="Compartilhar">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
             <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
             <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
           </svg>
         </button>
-        <button class="lb-btn lb-download" aria-label="Download">
+        <button type="button" class="lb-btn lb-download" aria-label="Baixar foto" title="Baixar">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
             <polyline points="7 10 12 15 17 10"/>
@@ -69,17 +73,15 @@
       </div>
     </div>
     <div class="lb-stage">
-      <button class="lb-seta prev lb-prev" aria-label="Anterior">‹</button>
+      <button type="button" class="lb-seta prev lb-prev" aria-label="Anterior">‹</button>
       <img class="lb-img" src="" alt="" />
-      <button class="lb-seta next lb-next" aria-label="Próxima">›</button>
+      <button type="button" class="lb-seta next lb-next" aria-label="Próxima">›</button>
     </div>
   </div>
 
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-
-<script src="../assets/js/firebase-config.js"></script>
-<script src="../assets/js/galeria.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+  <script src="../assets/js/firebase-config.js"></script>
+  <script src="../assets/js/galeria.js"></script>
 </body>
 </html>
