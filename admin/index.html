@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Galeria Virtual | Bia Sousa</title>
+  <link rel="stylesheet" href="../assets/css/galeria.css" />
+  <style>
+    .login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; background: var(--creme); }
+    .login-card { background: var(--branco); border: 1px solid var(--borda); border-radius: 16px; padding: 40px 36px; width: 100%; max-width: 400px; box-shadow: var(--sombra); }
+    .login-card h1 { font-size: 24px; font-weight: 800; text-align: center; margin-bottom: 4px; }
+    .login-card .sub { text-align: center; color: var(--cinza); font-size: 13px; margin-bottom: 32px; font-weight: 500; }
+    .login-erro { background: #fef2f2; color: #dc2626; font-size: 13px; padding: 10px 14px; border-radius: 8px; margin-bottom: 16px; display: none; font-weight: 500; white-space: pre-wrap; }
+    .login-hint { text-align: center; color: #b0b8c4; font-size: 12px; margin-top: 20px; font-weight: 500; line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <div class="login-wrap" id="tela-login">
+    <div class="login-card">
+      <h1>Área Administrativa</h1>
+      <p class="sub">Firebase · sem Storage</p>
+      <div class="login-erro" id="erro" role="alert"></div>
+      <form id="form-login" autocomplete="on">
+        <div class="form-grupo">
+          <label class="form-label" for="email">E-mail</label>
+          <input class="form-input" type="email" id="email" name="email" required autocomplete="username" placeholder="seu@email.com" />
+        </div>
+        <div class="form-grupo">
+          <label class="form-label" for="senha">Senha</label>
+          <input class="form-input" type="password" id="senha" name="senha" required autocomplete="current-password" placeholder="••••••••" />
+        </div>
+        <button type="submit" class="btn-primario" style="width:100%;justify-content:center;padding:14px;margin-top:8px;border-radius:10px">Entrar</button>
+      </form>
+      <p class="login-hint">Authentication + Firestore<br>Fotos por URL (sem Storage)</p>
+    </div>
+  </div>
+
+  <div class="admin-layout escondido" id="painel">
+    <aside class="admin-sidebar">
+      <div class="marca">GALERIA</div>
+      <nav class="admin-nav">
+        <a href="#" class="ativo" data-page="dashboard">Dashboard</a>
+        <a href="#" data-page="galerias">Galerias</a>
+        <a href="#" data-page="clientes">Clientes</a>
+        <a href="#" id="btn-sair" style="margin-top:auto;opacity:.5">Sair</a>
+      </nav>
+    </aside>
+    <div class="admin-main" id="conteudo"></div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+  <script src="../assets/js/firebase-config.js"></script>
+  <script src="../assets/js/admin.js"></script>
+</body>
+</html>
